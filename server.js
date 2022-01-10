@@ -30,7 +30,7 @@ app.post('/shortUrls', async (req, res) => {
         return res.status(401).json('URL already exists');
       } 
       else {
-        await ShortUrl.create({ full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleString() })
+        await ShortUrl.create({ full: req.body.fullUrl, short: "a/"+req.body.shortUrl, date: new Date().toLocaleString() })
         res.redirect('/')
       }
     }
@@ -41,13 +41,9 @@ app.post('/shortUrls', async (req, res) => {
   }
 })
 
-app.get('/:shortUrl', async (req, res) => {
-  const surl = req.params.shortUrl
-  console.log(surl)
-  const shortUrl = await ShortUrl.findOne({ short: req.params.shortUrl })
-
-  console.log(shortUrl)
-  if (shortUrl == null) return res.sendStatus(404)
+app.get('/a/:shortUrl', async (req, res) => {
+ const shortUrl = await ShortUrl.findOne({ short: "a/"+req.params.shortUrl })
+ if (shortUrl == null) return res.sendStatus(404)
 
   shortUrl.clicks++
   shortUrl.save()
