@@ -24,11 +24,15 @@ app.post('/shortUrls', async (req, res) => {
   //Check if url exists
   else{ 
     try {
-      let url = await ShortUrl.findOne({ full: req.body.fullUrl });
+      let lUrl = await ShortUrl.findOne({ full: req.body.fullUrl });
+      let sUrl = await ShortUrl.findOne({ short: "a/"+req.body.shortUrl });
 
-      if (url) {
+      if (lUrl) {
         return res.status(401).json('URL already exists');
-      } 
+      }
+      else if(sUrl){
+        return res.status(401).json('A-link already exists');
+      }
       else {
         await ShortUrl.create({ full: req.body.fullUrl, short: "a/"+req.body.shortUrl, date: new Date().toLocaleString() })
         res.redirect('/')
@@ -50,6 +54,16 @@ app.get('/a/:shortUrl', async (req, res) => {
 
   res.redirect(shortUrl.full)
 })
+
+app.post('/delUrl', async (req, res) => {
+  try {
+      await ShortUrl.deleteOne({ full: req.body.fullUrl})
+      res.redirect('/')
+    }
+  catch (err) {
+      res.status(500).json('Server error');
+    }
+  })
 
 app.listen(process.env.PORT || 5000);
 
