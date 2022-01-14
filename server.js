@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const validUrl = require('valid_url')
 const ShortUrl = require('./models/shortUrl')
 const app = express()
+const shortid = require('shortid');
 
 mongoose.connect('mongodb+srv://abmongo:mongo@cluster0.exdyq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {
   useNewUrlParser: true, useUnifiedTopology: true
@@ -10,6 +11,8 @@ mongoose.connect('mongodb+srv://abmongo:mongo@cluster0.exdyq.mongodb.net/myFirst
 
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
+
+
 
 app.get('/', async (req, res) => {
   const shortUrls = await ShortUrl.find()
@@ -34,7 +37,8 @@ app.post('/shortUrls', async (req, res) => {
         return res.status(401).json('A-link already exists');
       }
       else {
-        await ShortUrl.create({ full: req.body.fullUrl, short: "a/"+req.body.shortUrl, date: new Date().toLocaleString() })
+        const urlCode = shortid.generate();
+        await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, short: "a/"+req.body.shortUrl, date: new Date().toLocaleDateString() })
         res.redirect('/')
       }
     }
@@ -57,13 +61,38 @@ app.get('/a/:shortUrl', async (req, res) => {
 
 app.post('/delUrl', async (req, res) => {
   try {
-      await ShortUrl.deleteOne({ full: req.body.fullUrl})
-      res.redirect('/')
-    }
+    await ShortUrl.findOneAndDelete({linkID:req.body.linkID})
+    res.redirect('/')
+  }
   catch (err) {
-      res.status(500).json('Server error');
-    }
-  })
+    res.status(500).json('Server error');
+  }
+})
+
+app.post('/editUrl', async (req, res) => {
+  try {
+    console.log(req.body)
+    var shID= await ShortUrl.findOne({linkID:req.body.linkID})
+    var mID = shID._id.toString()
+    console.log(mID)
+    await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
+    res.redirect('/')
+  }
+  catch (err) {
+    res.status(500).json('Server error');
+  }
+})
+
+
+    
+const bodyParser = require('body-parser');
+app.use(express.urlencoded({extended: true})); 
+app.post("/showMod", function (req, res) {
+    const show_modal = !!req.body.modal; // Cast to boolean
+    res.render("index", { show_modal });
+})
+
+  
 
 app.listen(process.env.PORT || 5000);
 

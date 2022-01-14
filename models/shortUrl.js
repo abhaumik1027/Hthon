@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const shortUrlSchema = new mongoose.Schema({
+  linkID: {
+    type: String,
+    required: true
+  },
   full: {
     type: String,
     required: true
