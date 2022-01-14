@@ -21,6 +21,7 @@ app.get('/', async (req, res) => {
 
 app.post('/shortUrls', async (req, res) => {
   // Check  url
+  console.log(validUrl(req.body.fullUrl))
   if (!validUrl(req.body.fullUrl)) {
     return res.status(401).json('Invalid url');
   }
@@ -28,7 +29,7 @@ app.post('/shortUrls', async (req, res) => {
   else{ 
     try {
       let lUrl = await ShortUrl.findOne({ full: req.body.fullUrl });
-      let sUrl = await ShortUrl.findOne({ short: "a/"+req.body.shortUrl });
+      let sUrl = await ShortUrl.findOne({ short: req.body.shortUrl });
 
       if (lUrl) {
         return res.status(401).json('URL already exists');
@@ -38,7 +39,7 @@ app.post('/shortUrls', async (req, res) => {
       }
       else {
         const urlCode = shortid.generate();
-        await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, short: "a/"+req.body.shortUrl, date: new Date().toLocaleDateString() })
+        await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
         res.redirect('/')
       }
     }
@@ -49,8 +50,8 @@ app.post('/shortUrls', async (req, res) => {
   }
 })
 
-app.get('/a/:shortUrl', async (req, res) => {
- const shortUrl = await ShortUrl.findOne({ short: "a/"+req.params.shortUrl })
+app.get('/:shortUrl', async (req, res) => {
+ const shortUrl = await ShortUrl.findOne({ short: req.params.shortUrl })
  if (shortUrl == null) return res.sendStatus(404)
 
   shortUrl.clicks++
@@ -70,17 +71,23 @@ app.post('/delUrl', async (req, res) => {
 })
 
 app.post('/editUrl', async (req, res) => {
-  try {
-    console.log(req.body)
-    var shID= await ShortUrl.findOne({linkID:req.body.linkID})
-    var mID = shID._id.toString()
-    console.log(mID)
-    await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
-    res.redirect('/')
+  console.log(validUrl(req.body.fullUrl))
+  if (!validUrl(req.body.fullUrl)) {
+    return res.status(401).json('Invalid url');
+  }
+  else{
+    try {
+      
+      var shID= await ShortUrl.findOne({linkID:req.body.linkID})
+      var mID = shID._id.toString()
+      console.log(mID)
+      await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
+      res.redirect('/')
   }
   catch (err) {
     res.status(500).json('Server error');
   }
+}
 })
 
 
