@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  <title>A-LINKS</title>
-</head>
+<%- include('header')%>
 <body>
   <div class="container">
     <h1>A-LINKS</h1>
@@ -22,8 +9,8 @@
       <input required placeholder="A-link" type="string" name="shortUrl" id="shortUrl" class="form-control col mr-2">
       <button class="btn btn-success" type="submit">Create A-Links</button>
     </form>
-    
-    <table class="table table-striped">
+    <div class="my-4"><input type="text" id="search" placeholder="Type to search" class="form-control col mr-2"></div>
+    <table id="searchable" class="table table-striped">
       <thead>
         <tr>
           <th>Full URL</th>
@@ -33,13 +20,13 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody style="font-family: 'Poppins', sans-serif;">
         <% shortUrls.forEach(shortUrl => { %> 
-          <tr>
-            <td><div style="max-width:550px; overflow:auto">
-                <a href="<%= shortUrl.full %>"><%= shortUrl.full %></a>
+          <tr class="search">
+            <td><div style="max-width:450px; text-overflow: ellipsis; overflow:hidden; white-space: nowrap;display: block; line-height: 2em;">
+                <a style="text-decoration: none;" href="<%= shortUrl.full %>"><%= shortUrl.full %></a>
             </div></td>
-            <td><a href="<%= shortUrl.short %>"><%= shortUrl.short %></a></td>
+            <td><a style="text-decoration: none;" href="<%= shortUrl.short %>"><%= shortUrl.short %></a></td>
             <td><%= shortUrl.clicks %></td>
             <td><%= shortUrl.date %></td>
             <td>
@@ -62,49 +49,17 @@
       </tbody>
     </table>
                 
-  <!-- Modal -->
-  <%- include('modal')%>
-  <!-- Modal --> 
-  <!-- Modal -->
-  <%- include('alert')%>
-  <!-- Modal -->    
-               
-  </div>
+    <!-- Edit Modal -->
+    <%- include('modal')%>
+    <!-- Modal --> 
 
-  <script>
-      $('#exampleModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-        var recipient = button.data('whatever')
-        const myArray = recipient.split(",");
-        var modal = $(this)
-        //modal.find('.modal-title').text('New message to ' + recipient)
-        console.log(modal)
-        modal.find('.modal-body #fullUrl').val(myArray[0])
-        modal.find('.modal-body #shortUrl').val(myArray[1])
-        modal.find('.modal-body #linkID').val(myArray[2])
-      })
-
-     
-  </script>
-  <script>
-    
-    $('#exampleModalAlert').on('show.bs.modal', function (event) {
-      console.log("here")
-      var button = $(event.relatedTarget) // Button that triggered the modal
-      var recipient = button.data('whatever')
-      const myArray = recipient.split(",");
-      var modal = $(this)
-      //modal.find('.modal-title').text('New message to ' + recipient)
-      console.log(modal)
-      modal.find('.modal-body #fullUrl').val(myArray[0])
-      modal.find('.modal-body #shortUrl').val(myArray[1])
-      modal.find('.modal-body #linkID').val(myArray[2])
-    })
-
-   
-</script>
-
-
+    <!-- Delete Modal -->
+    <%- include('alert')%>
+    <!-- Modal -->    
   
+  </div>
+  <%- include('util')%> 
+
 </body>
-</html>
+</html>             
+  
