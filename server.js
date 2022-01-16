@@ -13,17 +13,18 @@ app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
 
 
-
+//Load the table
 app.get('/', async (req, res) => {
-  const shortUrls = await ShortUrl.find()
-  res.render('index', { shortUrls: shortUrls })
+  let shortUrls = await ShortUrl.find()
+  res.render('index', { shortUrls: shortUrls, message: 'render' })
 })
 
+//Create a record
 app.post('/shortUrls', async (req, res) => {
   // Check  url
-  console.log(validUrl(req.body.fullUrl))
   if (!validUrl(req.body.fullUrl)) {
-    return res.status(401).json('Invalid url');
+      let shortUrls = await ShortUrl.find()
+      res.render('index', { shortUrls: shortUrls, message: 'invalid_url' })
   }
   //Check if url exists
   else{ 
@@ -32,74 +33,72 @@ app.post('/shortUrls', async (req, res) => {
       let sUrl = await ShortUrl.findOne({ short: req.body.shortUrl });
 
       if (lUrl) {
-        return res.status(401).json('URL already exists');
+        let shortUrls = await ShortUrl.find()
+        res.render('index', { shortUrls: shortUrls, message: 'url_exists' })
       }
       else if(sUrl){
-        return res.status(401).json('A-link already exists');
+        let shortUrls = await ShortUrl.find()
+        res.render('index', { shortUrls: shortUrls, message: 'alink_exists' })
       }
       else {
-        const urlCode = shortid.generate();
+        let urlCode = shortid.generate();
         await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
-        res.redirect('/')
+        let shortUrls = await ShortUrl.find()
+        res.render('index', { shortUrls: shortUrls, message: 'alink_added' })
       }
     }
     catch (err) {
-      console.error(err);
-      res.status(500).json('Server error');
+      res.status(500).json(err);
     }
   }
 })
 
+//Direct a alink to the long url
 app.get('/:shortUrl', async (req, res) => {
  const shortUrl = await ShortUrl.findOne({ short: req.params.shortUrl })
- if (shortUrl == null) return res.sendStatus(404)
-
-  shortUrl.clicks++
-  shortUrl.save()
-
-  res.redirect(shortUrl.full)
+ if (shortUrl == null) {
+    const shortUrls = await ShortUrl.find()
+    res.render('index', { shortUrls: shortUrls, message: 'search' })
+ }
+ else {
+    shortUrl.clicks++
+    shortUrl.save()
+    res.redirect(shortUrl.full)
+ }
 })
 
+//Delete an alink
 app.post('/delUrl', async (req, res) => {
   try {
     await ShortUrl.findOneAndDelete({linkID:req.body.linkID})
-    res.redirect('/')
+    let shortUrls = await ShortUrl.find()
+    res.render('index', { shortUrls: shortUrls, message: 'alink_deleted' })
   }
   catch (err) {
     res.status(500).json('Server error');
   }
 })
 
+//Edit an alink
 app.post('/editUrl', async (req, res) => {
-  console.log(validUrl(req.body.fullUrl))
   if (!validUrl(req.body.fullUrl)) {
-    return res.status(401).json('Invalid url');
+    const shortUrls = await ShortUrl.find()
+    res.render('index', { shortUrls: shortUrls, message: 'invalid_url' })
   }
   else{
     try {
       
       var shID= await ShortUrl.findOne({linkID:req.body.linkID})
       var mID = shID._id.toString()
-      console.log(mID)
       await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
-      res.redirect('/')
+      let shortUrls = await ShortUrl.find()
+      res.render('index', { shortUrls: shortUrls, message: 'alink_updated' })
   }
   catch (err) {
     res.status(500).json('Server error');
   }
 }
 })
-
-
-    
-const bodyParser = require('body-parser');
-app.use(express.urlencoded({extended: true})); 
-app.post("/showMod", function (req, res) {
-    const show_modal = !!req.body.modal; // Cast to boolean
-    res.render("index", { show_modal });
-})
-
-  
 
 app.listen(process.env.PORT || 5000);
 
