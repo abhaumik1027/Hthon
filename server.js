@@ -22,6 +22,7 @@ app.get('/', async (req, res) => {
 //Create a record
 app.post('/shortUrls', async (req, res) => {
   // Check  url
+  console.log(req.body)
   if (!validUrl(req.body.fullUrl)) {
       let shortUrls = await ShortUrl.find()
       res.render('index', { shortUrls: shortUrls, message: 'invalid_url' })
@@ -42,7 +43,8 @@ app.post('/shortUrls', async (req, res) => {
       }
       else {
         let urlCode = shortid.generate();
-        await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
+        await ShortUrl.create({linkID: urlCode, full: req.body.fullUrl, 
+                       short: req.body.shortUrl, date: new Date().toLocaleDateString(), tag: req.body.tag, creator: "Ani Bhaumik"})
         let shortUrls = await ShortUrl.find()
         res.render('index', { shortUrls: shortUrls, message: 'alink_added' })
       }
@@ -59,6 +61,7 @@ app.get('/:shortUrl', async (req, res) => {
  if (shortUrl == null) {
     const shortUrls = await ShortUrl.find()
     res.render('index', { shortUrls: shortUrls, message: 'search' })
+    
  }
  else {
     shortUrl.clicks++
@@ -67,12 +70,26 @@ app.get('/:shortUrl', async (req, res) => {
  }
 })
 
+//Get `by tags
+app.get('/tag/:tag', async (req, res) => {
+  let tag = req.params.tag.toUpperCase();
+  const shortUrl = await ShortUrl.find({ tag: tag })
+  if (shortUrl.length == 0) {
+     const shortUrls = await ShortUrl.find()
+     res.render('index', { shortUrls: shortUrls, message: 'no_tag' })
+  }
+  else {
+    res.render('index', { shortUrls: shortUrl, message: '' })
+  }
+ })
+
 //Delete an alink
 app.post('/delUrl', async (req, res) => {
   try {
-    await ShortUrl.findOneAndDelete({linkID:req.body.linkID})
-    let shortUrls = await ShortUrl.find()
+    await ShortUrl.findOneAndDelete({linkID:req.body.linkID});
+    const shortUrls = await ShortUrl.find();
     res.render('index', { shortUrls: shortUrls, message: 'alink_deleted' })
+
   }
   catch (err) {
     res.status(500).json('Server error');
@@ -90,7 +107,8 @@ app.post('/editUrl', async (req, res) => {
       
       var shID= await ShortUrl.findOne({linkID:req.body.linkID})
       var mID = shID._id.toString()
-      await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, date: new Date().toLocaleDateString() })
+      await ShortUrl.findByIdAndUpdate(mID, {full: req.body.fullUrl, short: req.body.shortUrl, 
+        date: new Date().toLocaleDateString(), tag: req.body.tag, creator: "Ani Bhaumik"})
       let shortUrls = await ShortUrl.find()
       res.render('index', { shortUrls: shortUrls, message: 'alink_updated' })
   }

@@ -18,7 +18,16 @@ const shortUrlSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
-  date: { type: String }
+  date: { type: String },
+  tag: {
+    type: String,
+    required: true
+  },
+  creator: {
+    type: String,
+    required: true
+  }
+
 })
 
 module.exports = mongoose.model('ShortUrl', shortUrlSchema)
