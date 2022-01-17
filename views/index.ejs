@@ -1,11 +1,14 @@
 <%- include('header')%>
 <body style="font-family: 'Prompt', sans-serif;">
   <div class="container padt2">
-    <h1>A-LINKS</h1>
-    
+    <h1 style="font-family: 'Mochiy Pop P One', sans-serif;">A-LINKS</h1>
+    <div class="container bg-light padtsm">
         <%- include('infoBox')%>
-        <%- include('createForm')%>
-        <div class='padtsm'></div>
+        <div class="container"><%- include('createForm')%></div>
+        
+    </div>
+    <div class='padtsm'></div>        
+
         <table id="sortTab" class="table table-striped">
           <thead>
             <tr>
@@ -80,9 +83,9 @@
         <!-- Delete Modal -->
         <%- include('alert')%>
         <!-- Modal -->    
-  
       </div>
-      <%- include('utilJS')%> 
+    </div>
+    <%- include('utilJS')%> 
      
     
 </body>
