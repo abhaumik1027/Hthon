@@ -26,8 +26,14 @@ const shortUrlSchema = new mongoose.Schema({
   creator: {
     type: String,
     required: true
+  },
+  tagColorCode: {
+    type: String,
+    required: false
   }
 
 })
+
+
 
 module.exports = mongoose.model('ShortUrl', shortUrlSchema)

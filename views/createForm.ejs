@@ -3,11 +3,10 @@
     <input required placeholder="Url" type="url" name="fullUrl" id="fullUrl" class="form-control col mr-2">
     <label for="shortUrl" class="sr-only">A-Link</label>
     <input required placeholder="A-link" type="string" name="shortUrl" id="shortUrl" class="form-control col mr-2">
-    <select name="tag" id="tag" class="selectpicker" >
-        <option data-content="<span class='badge badge-primary'>GENERAL</span>">GENERAL</option>
-        <option data-content="<span class='badge badge-secondary'>DATABASE</span>">DATABASE</option>
-        <option data-content="<span class='badge badge-danger'>SECURITY</span>">SECURITY</option>
-        <option data-content="<span class='badge badge-success'>USER INTERFACE</span>">USER INTERFACE</option>
+    <select name="tag" id="tag" class="form-control js-example-tags form-control" >
+      <% tagDetails.forEach(tagDetail => { %>   
+        <option style="font-family: 'Prompt', sans-serif;"><%= tagDetail.toUpperCase() %></option>
+      <% }) %>
     </select>
       
       &nbsp;
